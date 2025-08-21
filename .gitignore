@@ -1,0 +1,7 @@
+# Ignore build output directories
+model/
+image_output/
+csv_output/
+brain_region_extracted/
+mask_insular_amygdala/
+subtitle_all/
