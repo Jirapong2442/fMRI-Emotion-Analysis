@@ -9,3 +9,7 @@ extracted_voxel/
 best_cnnLstm.pt
 cnn_lstm_out.png
 cnn_lstm_model
+
+windowed_X.dat
+Y_windowed.dat
+bestdeLstm.pt
