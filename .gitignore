@@ -13,3 +13,6 @@ cnn_lstm_model
 windowed_X.dat
 Y_windowed.dat
 bestdeLstm.pt
+non_balanced_DenseNetLstm.pt
+test.pt
+best_model.pth
