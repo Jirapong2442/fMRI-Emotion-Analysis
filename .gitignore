@@ -6,6 +6,7 @@ brain_region_extracted/
 mask_insular_amygdala/
 subtitle_all/
 extracted_voxel/
+image_out/
 best_cnnLstm.pt
 cnn_lstm_out.png
 cnn_lstm_model
