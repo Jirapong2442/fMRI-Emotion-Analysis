@@ -17,3 +17,4 @@ bestdeLstm.pt
 non_balanced_DenseNetLstm.pt
 test.pt
 best_model.pth
+Y_windowed_oneclass.dat
