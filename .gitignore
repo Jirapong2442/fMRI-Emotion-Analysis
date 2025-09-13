@@ -8,6 +8,9 @@ subtitle_all/
 extracted_voxel/
 image_out/
 best_CNN_LSTM/
+best_cnn_lstm_weight_class/
+emotion_subtitle/
+
 
 best_cnnLstm.pt
 cnn_lstm_out.png

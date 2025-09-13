@@ -1,6 +1,17 @@
 
 import numpy as np
 import pandas as pd
+import re
+from transformers import AutoModelForSequenceClassification
+import os
+from transformers import AutoTokenizer, AutoConfig, AutoModel
+from scipy.special import softmax
+
+#load model
+MODEL = f"j-hartmann/emotion-english-distilroberta-base"
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+config = AutoConfig.from_pretrained(MODEL)
+model_sentiment = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
 def preprocess_subtitle(path):
     with open(path, "r", encoding='utf-8-sig') as f:
@@ -82,8 +93,34 @@ def preprocess_subtitle(path):
 
     return time_arr, subtitles, sentence_arr # first two for debug, last for main use
 
+def clean_sentence(sentence):
+    sentence = re.sub(r'\W+', ' ', sentence)  # Remove symbols/punctuation
+    sentence = sentence.lower()               # Lowercase
+    sentence = re.sub(r'\s+', ' ', sentence)  # Remove extra spaces
+    return sentence.strip()  
+
+def get_emotion_scores(sentence):
+    encoded_input = tokenizer(sentence, return_tensors='pt')
+    output = model_sentiment(**encoded_input)
+    scores = output[0][0].detach().numpy()
+    scores = softmax(scores)
+    return scores
+
+def run_emotion_label_generator(subtitle_path, output_path=None):
+    file_name = subtitle_path.split("/")[-1].replace("_subtitle.srt", "")
+    out_path = output_path if output_path is not None else "./"
+    file_name = os.path.join(out_path, file_name + "_emotion.csv")
+
+    _,_,sentence_arr = preprocess_subtitle(subtitle_path)
+    sentence_arr['text'] = sentence_arr['text'].apply(clean_sentence)
+    emotions = ['anger', 'disgust', 'fear', 'joy', 'neutral', 'sadness', 'surprise']
+    emotion_scores = sentence_arr['text'].apply(get_emotion_scores)
+    emotion_df = pd.DataFrame(emotion_scores.tolist(), columns=emotions)
+    result_df = pd.concat([sentence_arr, emotion_df], axis=1)
+    result_df.to_csv(file_name, index=False)
+
+
 if __name__ == "__main__":
-    path = "/mnt/c/Users/NA/Saved Games/eeg_study/subtitle_all/little_miss_sunshine_subtitle.srt"
-    _,_,sentence_arr = preprocess_subtitle(path)
-    print(sentence_arr)
-    
+    path = "/mnt/c/Users/NA/Saved Games/fmri/subtitle_all/little_miss_sunshine_subtitle.srt"
+    out_path = "/home/jirapong/fmri_emotion/fMRI-Emotion-Analysis/emotion_subtitle/"
+    run_emotion_label_generator(path, out_path)
